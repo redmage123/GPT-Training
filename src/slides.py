@@ -5,7 +5,9 @@ class GPT3Presentation:
     def __init__(self):
         self.prs = Presentation()
         self.title = ""
-        self.font_size = 24
+        self.font = "Calibri"
+        self.font_size = 22
+
 
     def add_slide(self, title, bullet_text):
         slide = self.prs.slides.add_slide(self.prs.slide_layouts[1])
