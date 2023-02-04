@@ -1,30 +1,58 @@
+import yaml
 import collections
 import collections.abc
 from pptx import Presentation
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
 from pptx.util import Inches,Pt
 import sys
+from os import path
 
 class GPT3Presentation:
-    def __init__(self):
+    def __init__(self, yaml_file: str):
         self.prs = Presentation()
+        self.slides_text = []
+        self.yaml_file = yaml_file
+        self.content = None
+        self.font_type = "Calibri"
+        self.font_size = Pt(22)
+        self.slides_text = []
+        
+    def load_yaml_file(self) :
+        self.yaml_file = "/home/bbrelin/src/repos/GPT-Training/src/sample_slide.yaml"
+        try:
+            with open(self.yaml_file,"r") as yf:
+                self.content = yaml.safe_load(yf)
+        except: 
+            raise FileNotFoundError("Error:  File not found!")
+        return
+    
+    def parse_yaml_file(self):
+        if self.content == None:
+            assert("No data in yaml file!")
+        self.font = self.content['font']
+        self.font_size = self.content['fontsize']
+        for slide in self.content['Slides']:
+            self.slides_text.append({slide.title:[text for text in slide.text]})
 
-    def add_slide(self, title:str, bullet_text:list):
+    def add_slide(self,slide_contents):
         slide = self.prs.slides.add_slide(self.prs.slide_layouts[1])
         title_shape = slide.shapes.title
-        title_shape.text = title
-        bullet_shape = slide.shapes.placeholders[1]
-        tf = bullet_shape.text_frame
-        for text in bullet_text:
-            p = tf.add_paragraph()
-            p.text = text
-            p.font.type = "Calibri"
-            p.font.size = Pt(22)
 
-    def generate_presentation(self,text_corpus:list): 
-        for slide_dict in text_corpus:
-            for key,value in slide_dict.items():
-                self.add_slide(key,value)
+        for title,bullet_text in slide_contents.items():
+            title_shape.text = title
+            bullet_shape = slide.shapes.placeholders[1]
+            tf = bullet_shape.text_frame
+            for text in bullet_text:
+                p = tf.add_paragraph()
+                p.text = text
+                p.font.type = self.font
+                p.font.size = self.font_size
+
+    def generate_presentation(self): 
+        self.load_yaml_file()
+        self.parse_yaml_file() 
+        for slide in self.content:
+            self.add_slide(slide['title'],slide['text'])
         print ("Saving presentation")
         self.prs.save('GPT3-technical.pptx')
 #text_frame = add_text_box(slide, text, Inches(0.5), Inches(6), Inches(9), Inches(2))
@@ -43,7 +71,16 @@ def add_text_box(slide, text, left, top, width, height):
 '''
 
 
-prs = GPT3Presentation()
+yaml_file = input("Please enter the input file path: ")
+try:
+    with open(yaml_file,"r") as y:
+        pass
+except FileNotFoundError:
+    sys.stderr.write("Error:  File does not exist!")
+    sys.exit(1)
+    
+prs = GPT3Presentation(yaml_file)
+'''
 slides_text =  [{"Introduction:":["In today's world, technology has enabled us to interact with machines in a way that mimics human interaction.","This is made possible through Natural Language Processing (NLP) which involves the use of computer algorithms to analyze, understand, and generate human language.","In this presentation, we will discuss the various models used for NLP, including Recurrent Neural Networks (RNNs), Long Short-Term Memory Neural Networks (LSTMs), and Transformer Neural Networks.","We will also discuss the strengths and weaknesses of these models, as well as the use cases for Generative Pre-trained Transformer (GPT) models, including ChatGPT.","Finally, we will discuss the future directions of GPTs."]},
                {"What is Natural Language Processing?":["NLP is the branch of artificial intelligence that focuses on the interaction between computers and humans using natural language.","It involves the use of computer algorithms to process, analyze, and understand human language, including speech and text."]},
                {"Models used for NLP":["- Recurrent Neural Networks (RNNs)","- Long Short-Term Memory Neural Networks (LSTMs)","- Transformer Neural Networks"]},
@@ -59,4 +96,5 @@ slides_text =  [{"Introduction:":["In today's world, technology has enabled us t
                {"How ChatGPT Works":["ChatGPT works by using the GPT architecture to generate a response based on the input it receives.","The model has been pre-trained on a large corpus of text data, which allows it to understand the context of a conversation and generate appropriate responses."]},
                {"Future Directions for GPTs":["The field of NLP is rapidly evolving and there is a growing interest in the use of GPTs for various applications.","In the future, we can expect to see GPTs being used for even more complex NLP tasks, such as sentiment analysis and natural language generation.","Additionally, there is a growing interest in the use of GPTs for tasks such as recommendation systems and content creation."]},
                {"Conclusion":["In conclusion, GPTs and ChatGPT are powerful models that are changing the way we interact with computers using natural language.","They have been trained on large amounts of data, which allows them to understand the context of a conversation and generate appropriate responses.","With the growing interest in NLP and the increasing use of GPTs for various applications, we can expect to see continued advancements in this field in the years to come."]}]
-prs.generate_presentation(slides_text)               
+'''
+prs.generate_presentation()               
