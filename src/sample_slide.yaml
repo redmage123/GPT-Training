@@ -1,21 +1,21 @@
 slides:
-  font: Arial
-  fontsize: 14
+  - font: Arial
+  - fontsize: 14
   - slide:
-      title: Introduction
-      bullet_points:
-        - Overview of the presentation
-        - Purpose of the presentation
-        - Key takeaways
+    title: Introduction
+    bullet_points:
+      - Overview of the presentation
+      - Purpose of the presentation
+      - Key takeaways
   - slide:
-      title: Background
-      bullet_points:
-        - Historical context
-        - Relevant research and studies
-        - Industry trends and developments
+    title: Background
+    bullet_points:
+      - Historical context
+      - Relevant research and studies
+      - Industry trends and developments
   - slide:
-      title: Main Points
-      bullet_points:
-        - Key arguments and evidence
-        - Analysis and interpretation
-        - Best practices and recommendations
+    title: Main Points
+    bullet_points:
+      - Key arguments and evidence
+      - Analysis and interpretation
+      - Best practices and recommendations
